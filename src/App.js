@@ -9,6 +9,7 @@ import DetailLigne from './DetailLigne';
 import Footer from './Footer';
 
 function App() {
+    const [compteurRecherche, setCompteurRecherche] = useState(0);
     const [recherche, setRecherche] = useState("");
     const [ligneSelectionnee, setLigneSelectionnee] = useState(null);
 
@@ -25,7 +26,13 @@ function App() {
         l.depart.toLowerCase().includes(recherche.toLowerCase()) ||
         l.arrivee.toLowerCase().includes(recherche.toLowerCase()) ||
         l.numero.includes(recherche)
+
     );
+
+    const handleRecherche = (valeur) => {
+    setRecherche(valeur);
+    setCompteurRecherche(compteurRecherche + 1);
+    };
 
     function handleClickLigne(ligne) {
         if (ligneSelectionnee && ligneSelectionnee.id === ligne.id) {
@@ -38,33 +45,40 @@ function App() {
         <div className="App">
         <Header />
 
-        <main className="contenu">
-            <Recherche valeur={recherche} onChange={setRecherche} />
+    <main className="contenu">
+        <p>
+            Vous avez effectué {compteurRecherche} recherche(s)
+        </p>
+        <Recherche valeur={recherche} onChange={handleRecherche} />
 
-            <p className="resultat-recherche">
+        <p className="resultat-recherche">
             {lignesFiltrees.length} ligne
             {lignesFiltrees.length > 1 ? 's' : ''} trouvée
             {lignesFiltrees.length > 1 ? 's' : ''}
-            </p>
+        </p>
 
-            {lignesFiltrees.map((ligne) => (
-            <LigneBus
-                key={ligne.id}
-                numero={ligne.numero}
-                depart={ligne.depart}
-                arrivee={ligne.arrivee}
-                arrets={ligne.arrets}
-                estSelectionnee={
-                ligneSelectionnee && ligneSelectionnee.id === ligne.id
-                }
-                onClick={() => handleClickLigne(ligne)}
-            />
-            ))}
+        {lignesFiltrees.length === 0 ? (
+            <p>Aucune ligne trouvée</p>
+        ) : (
+            lignesFiltrees.map((ligne) => (
+                <LigneBus
+                    key={ligne.id}
+                    numero={ligne.numero}
+                    depart={ligne.depart}
+                    arrivee={ligne.arrivee}
+                    arrets={ligne.arrets}
+                    estSelectionnee={
+                        ligneSelectionnee && ligneSelectionnee.id === ligne.id
+                    }
+                    onClick={() => handleClickLigne(ligne)}
+                />
+            ))
+        )}
 
-            {ligneSelectionnee && (
+        {ligneSelectionnee && (
             <DetailLigne ligne={ligneSelectionnee} />
-            )}
-        </main>
+        )}
+    </main>
 
         <Footer />
         </div>
